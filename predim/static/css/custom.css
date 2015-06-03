@@ -1,0 +1,25 @@
+.full {
+   background: url('../img/drillrig.jpg') no-repeat center center fixed;
+}
+
+/* D3.js heatmap */
+.rect.bordered {
+    stroke: #E6E6E6;
+    stroke-width:2px;   
+}
+
+.text.mono {
+    font-size: 9pt;
+    font-family: Consolas, courier;
+    fill: #aaa;
+}
+
+.text.axis-workweek {
+    fill: #000;
+}
+
+.text.axis-worktime {
+    fill: #000;
+}
+
+/* End of d3.js heatmap */

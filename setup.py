@@ -2,6 +2,7 @@ from setuptools import setup, find_packages
 
 setup(
     name='predim',
+    author='Srivatsan Ramanujam <sramanujam@pivotal.io>',
     description='Pivotal DS Marketplace - IoT Demo',
     version='0.1',
     long_description=__doc__,

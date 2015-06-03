@@ -7,19 +7,50 @@ import os
 from flask import Flask, render_template
 import pandas.io.sql as psql
 import psycopg2
+import logging
 
 app = Flask(__name__)
+logging.basicConfig(level=logging.DEBUG)
+logger = logging.getLogger(__name__)
 
-@app.route('/')
-@app.route('/index')
 def index():
     """
        Render homepage
     """
-    print '###In index()'
-    #return 'Hello World'
     return render_template('index.html', title='IOT demo')
 
+@app.route('/')
+@app.route('/home')
+def home():
+    """
+       Homepage
+    """
+    logger.debug('In home()')
+    return render_template('home.html')
+
+@app.route('/about')
+def about():
+    """
+       About page, listing background information about the app
+    """
+    logger.debug('In about()')
+    return render_template('about.html')
+
+@app.route('/contact')
+def contact():
+    """
+       Contact page
+    """
+    logger.debug('In contact()')
+    return render_template('contact.html')
+
+@app.route('/<path:path>')
+def static_proxy(path):
+    """
+       Serving static files
+    """
+    logger.debug('In static_proxy()')
+    return app.send_static_file(path)
 
 def main():
     """

@@ -1,0 +1,18 @@
+{% extends "layout.html" %}
+{% block content %}
+<style>
+.full {
+   background: url('../img/drillrig.jpg') no-repeat center center fixed;
+}
+</style>
+<div id='drillheatmap' class="text-center">
+    <h1 class="text-center">Well Failures Heatmap</h1>
+    <script type="text/javascript">
+        $(document).ready(
+           function(){
+               drillHeatmap();
+           }
+        );
+    </script>
+</div>
+{% endblock %}
