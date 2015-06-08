@@ -4,6 +4,7 @@ The conda_requirements.txt file lists all the python modules that are pre-requis
 
 Code Organization
 ==================
+```
 predim/
    server.py #Main module containing all controller code
    static/
@@ -17,6 +18,7 @@ predim/
       home.html #home page template
       about.html #about page template
       contact.html #contact page template
+```
 
 Starting the app locally
 ========================
