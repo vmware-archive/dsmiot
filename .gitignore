@@ -1,3 +1,6 @@
+# User supplied credentials
+user.cred
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]

@@ -1,5 +1,6 @@
 include *.md
 include *.txt
 include *.py
+include predim/user.cred
 recursive-include predim/templates *
 recursive-include predim/static *
