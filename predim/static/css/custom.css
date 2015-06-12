@@ -2,6 +2,13 @@
    background: url('../img/drillrig.jpg') no-repeat center center fixed;
 }
 
+.panel-transparant .panel-heading{
+   background: rgba(122, 130, 136, 0.2);
+}
+.panel-transparent .panel-body{
+   background: rgba(46, 51, 56, 0.2);
+}
+
 /* D3.js heatmap */
 .rect.bordered {
     stroke: #E6E6E6;
