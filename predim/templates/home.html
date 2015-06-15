@@ -11,7 +11,9 @@
         <script type="text/javascript">
             $(document).ready(
                function(){
-                   drillHeatmap();
+                   $.getJSON("/_drillrig_hmap", function (data) { 
+                       drillHeatmap(data.hmap);
+                   });
                }
             );
         </script>

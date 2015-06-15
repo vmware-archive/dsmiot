@@ -89,7 +89,8 @@ def drillrig_heatmap():
     df = psql.read_sql(sql, conn)
     logger.info(sql)
     logger.info('drillrig_heatmap: {0} rows'.format(len(df)))
-    return jsonify(hmap={k:v for k,v in df.to_dict().items() if k in ['well_id','hour','prob']})
+    return jsonify(hmap=[{'well_id':r['well_id'], 'hour':r['hour'], 'prob':r['prob']} for indx, r in df.iterrows()])
+    #return jsonify(hmap={k:v for k,v in df.to_dict().items() if k in ['well_id','hour','prob']})
 
 def main():
     """
