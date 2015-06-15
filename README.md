@@ -22,7 +22,20 @@ predim/
 
 Starting the app locally
 ========================
-Run the following from the root directory:
+
+1. Create a file ```predim/user.cred``` with the relevant database access credentials like the following. This file will not be added to your version control (the .gitignore file will filter it out)
+```
+[database_creds]
+host: <YOUR HOSTNAME>
+port: <YOUR PORT>
+user: <YOUR USERNAME>
+database: <YOUR DATABASE>
+password: <YOUR PASSOWRD>
+```
+
+2. Ensure your local machine can talk to the environment where the data resides in (ex: you may need to connect to a VPN if your data resides on a cluster behind a firewall)
+
+3. Run the following from the root directory:
 ```
 python setup.py build;python setup.py install;python -m predim
 ```
