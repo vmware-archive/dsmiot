@@ -25,12 +25,14 @@ Starting the app locally
 
 1. Create a file ```predim/user.cred``` with the relevant database access credentials like the following. This file will not be added to your version control (the .gitignore file will filter it out)
 ```
+<pre>
 [database_creds]
 host: <YOUR HOSTNAME>
 port: <YOUR PORT>
 user: <YOUR USERNAME>
 database: <YOUR DATABASE>
 password: <YOUR PASSOWRD>
+</pre>
 ```
 
 2. Ensure your local machine can talk to the environment where the data resides in (ex: you may need to connect to a VPN if your data resides on a cluster behind a firewall)
