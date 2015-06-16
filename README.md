@@ -23,9 +23,10 @@ predim/
 Starting the app locally
 ========================
 
-1. Create a file ```predim/user.cred``` with the relevant database access credentials like the following. This file will not be added to your version control (the .gitignore file will filter it out)
+1. Create a file ```predim/user.cred``` with the relevant database access credentials like the following. This file will not be added to your version control (the .gitignore file will filter it out):
+
 ```
-\[database_creds\]
+[database_creds]
 host: <YOUR HOSTNAME>
 port: <YOUR PORT>
 user: <YOUR USERNAME>
