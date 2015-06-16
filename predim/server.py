@@ -16,7 +16,7 @@ from sql.queries import *
 app = Flask(__name__)
 
 #init logger
-logging.basicConfig(level=logging.DEBUG)
+logging.basicConfig(level=logging.DEBUG, format='%(asctime)s - %(levelname)s - %(message)s')
 logger = logging.getLogger(__name__)
 
 #init flask assets
