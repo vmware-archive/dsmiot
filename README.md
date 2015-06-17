@@ -6,7 +6,7 @@ The requirements.txt file lists all python packages that are only available thro
 Code Organization
 ==================
 ```
-dsmiot # root level folder containing all package files & app files
+dsmiot/ # root level folder containing all package files & app files
     README.md # This file
     conda_requirements.txt # file containing all `conda` packages needed by this app.
     requirements.txt # file containing all `pip` packages needed by this app (not available via `conda`)
@@ -33,7 +33,6 @@ Starting the app locally
 ========================
 
 1. Create a file ```predim/user.cred``` with the relevant database access credentials like the following. This file will not be added to your version control (the .gitignore file will filter it out):
-
 ```
 [database_creds]
 host: <YOUR HOSTNAME>
@@ -42,10 +41,8 @@ user: <YOUR USERNAME>
 database: <YOUR DATABASE>
 password: <YOUR PASSOWRD>
 ```
-
 2. Ensure your local machine can talk to the environment where the data resides in (ex: you may need to connect to a VPN if your data resides on a cluster behind a firewall)
-
-3. Run the following from the root directory:
+3. Run the following from the root directory
 ```
 python setup.py build;python setup.py install;python -m predim
 ```
@@ -58,12 +55,10 @@ Pushing the app to PCF
 ```
 dsmiot [master●●] cf push predimcf  -b git://github.com/ihuston/python-conda-buildpack.git -c "bash deploy" -t 180     
 ```
-
 2. Create User Provided Service for database credentials (first time only)
 ```
 dsmiot [master●●] cf cups predimcreds -p '{"host":"<HOST>","user":"<USER>","password":"<PASSWORD>", "databasename":"<DATABASE>", "port":"<PORT>" }'
 ```
-
 3. Bind the User Provided Service to the App (first time only)
 ```
 dsmiot [master●●] cf bind-service predimcf predimcreds
