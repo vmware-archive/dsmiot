@@ -10,13 +10,14 @@ import pandas.io.sql as psql
 import psycopg2
 import logging
 import ConfigParser
+import json
 from sql.queries import *
 
 #init app
 app = Flask(__name__)
 
 #init logger
-logging.basicConfig(level=logging.DEBUG, format='%(asctime)s - %(levelname)s - %(message)s')
+logging.basicConfig(level= logging.DEBUG if not os.getenv('VCAP_APP_PORT') else logging.ERROR, format='%(asctime)s - %(levelname)s - %(message)s')
 logger = logging.getLogger(__name__)
 
 #init flask assets
@@ -97,11 +98,19 @@ def main():
        Start the application
     """
     global conn
+    host, port, user, database, password, app_port = None, None, None, None, None, None
     if(os.getenv("VCAP_APP_PORT")):
-        port = int(os.getenv("VCAP_APP_PORT"))
+        app_port = int(os.getenv("VCAP_APP_PORT"))
+        vcap_services = json.loads(os.environ['VCAP_SERVICES'])
+        creds = vcap_services['user-provided'][0]['credentials']
+        host = creds['host'] 
+        user = creds['user']
+        database = creds['database']
+        password = creds['password']
+        port = creds['port']
     else:
         #default port
-        default_port = 9090
+        app_port = 9090
         #Read database credentials from user supplied file
         basepath = os.path.dirname(__file__)
         conf.read(os.path.join(basepath,'user.cred'))
@@ -112,15 +121,15 @@ def main():
         user = conf.get('database_creds','user')
         database = conf.get('database_creds','database')
         password = conf.get('database_creds','password')
-        conn = psycopg2.connect("""dbname='{database}' user='{user}' host='{host}' port='{port}' password='{password}'""".format
-                     (
-                         database=database,
-                         host=host,
-                         port=port,
-                         user=user,
-                         password=password
-                     )
-               )
-        df = psql.read_sql('select x, x+random() as y from generate_series(1,10) x;',conn)
-        logger.debug('Testing SQL connection : {nrows} rows returned'.format(nrows=df.size))
-    app.run(host='0.0.0.0', debug=True, port=default_port)
+    conn = psycopg2.connect("""dbname='{database}' user='{user}' host='{host}' port='{port}' password='{password}'""".format
+                 (
+                     database=database,
+                     host=host,
+                     port=port,
+                     user=user,
+                     password=password
+                 )
+           )
+    df = psql.read_sql('select x, x+random() as y from generate_series(1,10) x;',conn)
+    logger.debug('Testing SQL connection : {nrows} rows returned'.format(nrows=df.size))
+    app.run(host='0.0.0.0', debug= True if not os.getenv('VCAP_APP_PORT') else False, port=app_port)

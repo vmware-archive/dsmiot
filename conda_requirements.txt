@@ -1,5 +1,4 @@
 flask
-flask-assets
 psycopg2
 pandas
 
