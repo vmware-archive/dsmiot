@@ -2,15 +2,11 @@
    IoT demo: Server side components for the Pivotal Data Science Marketplace prototype app for IoT
    Author: Srivatsan Ramanujam <sramanujam@pivotal.io>, 28-May-2015
 """
-
 import os
 from flask import Flask, render_template, jsonify, request
 from flask.ext.assets import Bundle, Environment
-import pandas.io.sql as psql
-import psycopg2
 import logging
-import ConfigParser
-import json
+from dbconnector import DBConnect
 from sql.queries import *
 
 #init app
@@ -34,10 +30,8 @@ bundles = {
 assets = Environment(app)
 assets.register(bundles)
 
-#Initialize config parser
-conf = ConfigParser.ConfigParser()
-
-conn = None
+#Initialize database connection objects
+conn = DBConnect(logger)
 
 def index():
     """
@@ -87,49 +81,14 @@ def drillrig_heatmap():
     INPUT_SCHEMA = 'iot'
     INPUT_TABLE = 'drilling_data_1000_arr_1hr_ahead_wid'
     sql = extract_predictions_for_heatmap(INPUT_SCHEMA, INPUT_TABLE)
-    df = psql.read_sql(sql, conn)
     logger.info(sql)
+    df = conn.fetchDataFrame(sql)
     logger.info('drillrig_heatmap: {0} rows'.format(len(df)))
     return jsonify(hmap=[{'well_id':r['well_id'], 'hour':r['hour'], 'prob':r['prob']} for indx, r in df.iterrows()])
-    #return jsonify(hmap={k:v for k,v in df.to_dict().items() if k in ['well_id','hour','prob']})
 
 def main():
     """
        Start the application
     """
-    global conn
-    host, port, user, database, password, app_port = None, None, None, None, None, None
-    if(os.getenv("VCAP_APP_PORT")):
-        app_port = int(os.getenv("VCAP_APP_PORT"))
-        vcap_services = json.loads(os.environ['VCAP_SERVICES'])
-        creds = vcap_services['user-provided'][0]['credentials']
-        host = creds['host'] 
-        user = creds['user']
-        database = creds['database']
-        password = creds['password']
-        port = creds['port']
-    else:
-        #default port
-        app_port = 9090
-        #Read database credentials from user supplied file
-        basepath = os.path.dirname(__file__)
-        conf.read(os.path.join(basepath,'user.cred'))
-        logger.debug('Config sections:'+','.join(conf.sections()))
-        #host, port, user, database, password
-        host = conf.get('database_creds','host')
-        port = conf.get('database_creds','port')
-        user = conf.get('database_creds','user')
-        database = conf.get('database_creds','database')
-        password = conf.get('database_creds','password')
-    conn = psycopg2.connect("""dbname='{database}' user='{user}' host='{host}' port='{port}' password='{password}'""".format
-                 (
-                     database=database,
-                     host=host,
-                     port=port,
-                     user=user,
-                     password=password
-                 )
-           )
-    df = psql.read_sql('select x, x+random() as y from generate_series(1,10) x;',conn)
-    logger.debug('Testing SQL connection : {nrows} rows returned'.format(nrows=df.size))
-    app.run(host='0.0.0.0', debug= True if not os.getenv('VCAP_APP_PORT') else False, port=app_port)
+    app_port = int(os.getenv('VCAP_APP_PORT')) if os.getenv('VCAP_APP_PORT') else 9090
+    app.run(host='0.0.0.0', debug= True if not os.getenv('VCAP_APP_PORT') else False, port = app_port)

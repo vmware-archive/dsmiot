@@ -7,7 +7,7 @@
    height: 30 px;
 }
 
-.panel-transparant .panel-heading{
+.panel-transparent .panel-heading{
    background: rgba(122, 130, 136, 0.2);
 }
 .panel-transparent .panel-body{
@@ -35,3 +35,23 @@ text.axis-worktime {
 }
 
 /* End of d3.js heatmap */
+
+/* Line chart */
+.axis path,
+.axis line {
+  fill: none;
+  stroke: #000;
+  shape-rendering: crispEdges;
+}
+
+.x.axis path {
+  display: none;
+}
+
+.line {
+  fill: none;
+  stroke: steelblue;
+  stroke-width: 1.5px;
+}
+
+/* End of line chart */
