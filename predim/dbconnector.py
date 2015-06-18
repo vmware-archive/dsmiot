@@ -41,14 +41,14 @@ class DBConnect(object):
                 database = conf.get('database_creds','database')
                 password = conf.get('database_creds','password')
 
-                #Initialize connection string
-                conn_str =  """dbname='{database}' user='{user}' host='{host}' port='{port}' password='{password}'""".format(                       
+            #Initialize connection string
+            conn_str =  """dbname='{database}' user='{user}' host='{host}' port='{port}' password='{password}'""".format(                       
                                 database=database,
                                 host=host,
                                 port=port,
                                 user=user,
                                 password=password
-                            )
+                        )
         self.conn_str = conn_str
         self.__initConnectionPool__()
 
