@@ -44,7 +44,7 @@ password: <YOUR PASSOWRD>
 2. Ensure your local machine can talk to the environment where the data resides in (ex: you may need to connect to a VPN if your data resides on a cluster behind a firewall)
 3. Run the following from the root directory
 ```
-python setup.py build;python setup.py install;python -m predim
+./deploy
 ```
 This will bring up the app on http://localhost:9090
 
@@ -59,8 +59,8 @@ dsmiot [master●●] cf push predimcf  -b git://github.com/ihuston/python-conda
 ```
 dsmiot [master●●] cf cups predimcreds -p '{"host":"<HOST>","user":"<USER>","password":"<PASSWORD>", "databasename":"<DATABASE>", "port":"<PORT>" }'
 ```
-3. Bind the User Provided Service to the App (first time only)
+3. Bind the User Provided Service to the app (first time only)
 ```
 dsmiot [master●●] cf bind-service predimcf predimcreds
 ```
-
+The app should now be accessible on your PCF instance. In our case, at `http://predimcf.pcf1-sc.vchs.pivotal.io/`

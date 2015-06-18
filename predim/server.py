@@ -20,6 +20,7 @@ logger = logging.getLogger(__name__)
 bundles = {
     'user_js': Bundle(
            'js/heatmap.js',
+           'js/tseries.js',
            output='gen/user.js',
         ),
     'user_css': Bundle(
@@ -85,6 +86,22 @@ def drillrig_heatmap():
     df = conn.fetchDataFrame(sql)
     logger.info('drillrig_heatmap: {0} rows'.format(len(df)))
     return jsonify(hmap=[{'well_id':r['well_id'], 'hour':r['hour'], 'prob':r['prob']} for indx, r in df.iterrows()])
+    
+@app.route('/_drillrig_tseries', methods=['GET'])    
+def drillrig_tseries():
+    """
+        Populate the drill-rig time-series of features
+    """
+    global conn
+    INPUT_SCHEMA = 'iot'
+    INPUT_TABLE = 'drilling_data_1000'
+    well_id = long(request.args.get('well_id'))
+    hour_of_day = int(request.args.get('hour'))
+    sql = extract_features_for_tseries(INPUT_SCHEMA, INPUT_TABLE, well_id, hour_of_day)
+    logger.info(sql)
+    df = conn.fetchDataFrame(sql)
+    logger.info('drillrig_tseries: {0} rows'.format(len(df)))
+    return jsonify(tseries=[{'ts_utc':r['ts_utc'], 'value':r['rpm']} for indx, r in df.iterrows()])    
 
 def main():
     """

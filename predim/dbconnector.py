@@ -68,7 +68,7 @@ class DBConnect(object):
         try:
             df = psql.read_sql(ping_cmd, self.getConnection())
         except psycopg2.Error, e:
-            logger.error('Database connection is not alive: '+e)
+            self.logger.error('Database connection is not alive: '+str(e))
             conn_alive = False
         return conn_alive
 
