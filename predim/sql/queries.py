@@ -260,3 +260,51 @@ def extract_predictions_for_heatmap(input_schema, input_table):
         input_table=input_table,
     )
     return sql
+
+def extract_features_for_tseries(input_schema, input_table, well_id, hour_of_day):
+    """
+        Inputs:
+        =======
+        input_schema (str): The schema containing the input table
+        input_table (str): The table in the input_schema containing data from the wells
+        well_id (long): The id of the well for which the features are being extracted
+        hour_of_day (int): The hour of day (ranges from 0 to 23) for which features are sought
+        Outputs:
+        ========
+        A sql code block        
+    """
+    sql = """
+        select 
+            *
+        from
+        (
+            select 
+                *,
+                -- we want the feature values for the last available day, for the given (well_id, hour)
+                rank() over (partition by well_id order by ts_utc::date desc) as dt_rank
+            from 
+                {input_schema}.{input_table} 
+            where 
+                well_id = {well_id} and 
+                extract(hour from ts_utc) = {hour_of_day}
+        )q
+        where dt_rank=1;   
+    """.format(
+        input_schema=input_schema,
+        input_table=input_table,
+        well_id=well_id,
+        hour_of_day=hour_of_day
+    )
+    return sql    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
