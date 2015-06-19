@@ -33,7 +33,7 @@ class DBConnect(object):
                 basepath = os.path.dirname(__file__)
                 conf = ConfigParser.ConfigParser()
                 conf.read(os.path.join(basepath,'user.cred'))
-                logger.debug('Config sections:'+','.join(conf.sections()))
+                self.logger.debug('Config sections:'+','.join(conf.sections()))
                 #host, port, user, database, password
                 host = conf.get('database_creds','host')
                 port = conf.get('database_creds','port')
@@ -78,7 +78,7 @@ class DBConnect(object):
         """
         if(self.pool.closed or not self.__is_dbconn_alive__()):
             self.pool.closeall()
-            logger.warn('Detected closed connections. Reconnecting...')
+            self.logger.warn('Detected closed connections. Reconnecting...')
             self.__initConnectionPool__()
 
     def getConnection(self):
