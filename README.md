@@ -1,7 +1,7 @@
 Pre-requisites
 ==============
-The conda_requirements.txt file lists all the python packages that are available via `conda` and are pre-requisites for this app.
-The requirements.txt file lists all python packages that are only available through `pip` and are pre-requisities for this app.
+The `conda_requirements.txt` file lists all the python packages that are available via `conda` and are pre-requisites for this app.
+The `requirements.txt` file lists all python packages that are only available through `pip` and are pre-requisities for this app.
 
 Code Organization
 ==================
@@ -32,7 +32,7 @@ dsmiot/ # root level folder containing all package files & app files
 Starting the app locally
 ========================
 
-1. Create a file ```predim/user.cred``` with the relevant database access credentials like the following. This file will not be added to your version control (the .gitignore file will filter it out):
+1. Create a file ```predim/user.cred``` with the relevant database access credentials like the following. This file will not be added to your version control (the `.gitignore` file will filter it out):
 ```
 [database_creds]
 host: <YOUR HOSTNAME>
@@ -63,4 +63,4 @@ dsmiot [master●●] cf cups predimcreds -p '{"host":"<HOST>","user":"<USER>","
 ```
 dsmiot [master●●] cf bind-service predimcf predimcreds
 ```
-The app should now be accessible on your PCF instance. In our case, at `http://predimcf.pcf1-sc.vchs.pivotal.io/`
+The app should now be accessible on your PCF instance. In our case, at http://predimcf.pcf1-sc.vchs.pivotal.io/

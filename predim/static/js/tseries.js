@@ -72,6 +72,11 @@ function invokeTimeSeries(well_id, hour) {
         "<div id='tseries_flowinrate' class=\"text-center\"></div><br><br>"+
         "<div id='tseries_bitpos' class=\"text-center\"></div>"
     );     
+    /* Scroll to the time-series plots */
+    $('html,body').animate({
+       scrollTop: $("#tseries").offset().top
+    });
+        
     $.getJSON(
         "/_drillrig_tseries", 
         {
@@ -80,11 +85,13 @@ function invokeTimeSeries(well_id, hour) {
         },
         function (data) {             
             d3.select("#tseries_spinner").html(""); 
-            heatmapDrilldown("tseries_rpm", "Time Series Plot: RPM", "RPM", "forestgreen");
-            heatmapDrilldown("tseries_rop", "Time Series Plot: Rate of Penetration", "Rate of Penetration", "tomato");
-            heatmapDrilldown("tseries_wob", "Time Series Plot: Weight on Bit", "Weight on Bit", "mediumvioletred");
-            heatmapDrilldown("tseries_flowinrate", "Time Series Plot: Flow-in Rate", "Flow-in Rate", "slateblue");
-            heatmapDrilldown("tseries_bitpos", "Time Series Plot: Bit Position", "Bit Position", "deeppink");
+            
+            /* Show the time series plots */
+            heatmapDrilldown(well_id, hour, "tseries_rpm", "Time Series Plot for RPM", "RPM", "forestgreen");
+            heatmapDrilldown(well_id, hour, "tseries_rop", "Time Series Plot for Rate of Penetration", "Rate of Penetration", "tomato");
+            heatmapDrilldown(well_id, hour, "tseries_wob", "Time Series Plot for Weight on Bit", "Weight on Bit", "mediumvioletred");
+            heatmapDrilldown(well_id, hour, "tseries_flowinrate", "Time Series Plot for Flow-in Rate", "Flow-in Rate", "slateblue");
+            heatmapDrilldown(well_id, hour, "tseries_bitpos", "Time Series Plot for Bit Position", "Bit Position", "deeppink");
             /*tseries('tseries_rpm', data.tseries, "Time Series Plot : RPM", "RPM", "steelblue");
             tseries('tseries_rop', data.tseries, "Time Series Plot: Rate of Penetration", "Rate of Penetration", "tomato");
             tseries('tseries_wob', data.tseries, "Time Series Plot: Weight on Bit", "Weight on Bit", "mediumvioletred");
@@ -94,7 +101,7 @@ function invokeTimeSeries(well_id, hour) {
     );
 }
 
-function heatmapDrilldown(div_id, title, yaxis_label, line_color) {
+function heatmapDrilldown(well_id, hour, div_id, title, yaxis_label, line_color) {
     var margin = {top: 20, right: 20, bottom: 30, left: 50},
         width = 960 - margin.left - margin.right,
         height = 500 - margin.top - margin.bottom;
@@ -158,9 +165,9 @@ function heatmapDrilldown(div_id, title, yaxis_label, line_color) {
          
       svg.append("text")
          .attr("x", (width / 2))
-         .attr("y", 2 - (margin.top / 2))
+         .attr("y", 0)
          .attr("text-anchor", "middle")  
          .style("font-size", "16px")
-         .text(title);
+         .text(title+": Well ID - "+well_id+" Hour of Day - "+hour);
     });
 }
