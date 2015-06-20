@@ -3,6 +3,7 @@
    Author: Srivatsan Ramanujam <sramanujam@pivotal.io>, 28-May-2015
 """
 import os
+import json
 from flask import Flask, render_template, jsonify, request
 from flask.ext.assets import Bundle, Environment
 import logging
@@ -21,10 +22,12 @@ bundles = {
     'user_js': Bundle(
            'js/heatmap.js',
            'js/tseries.js',
+           filters='jsmin' if os.getenv('VCAP_APP_PORT') else None, #minify if deploying on CF
            output='gen/user.js',
         ),
     'user_css': Bundle(
            'css/custom.css',
+           filters='jsmin' if os.getenv('VCAP_APP_PORT') else None, #minify if deploying on CF
            output='gen/user.css'
         )   
 }
@@ -101,7 +104,10 @@ def drillrig_tseries():
     logger.info(sql)
     df = conn.fetchDataFrame(sql)
     logger.info('drillrig_tseries: {0} rows'.format(len(df)))
-    return jsonify(tseries=[{'ts_utc':r['ts_utc'], 'value':r['rpm']} for indx, r in df.iterrows()])    
+    features = set(['ts_utc','rpm','depth','rpm','rop','wob','flow_in_rate','bit_position'])
+    result = [{k:r[k] for k in features} for indx, r in df.iterrows()] 
+    logger.info('tseries:'+str(len(result)))
+    return jsonify(tseries= result)
 
 def main():
     """
