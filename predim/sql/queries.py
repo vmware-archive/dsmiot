@@ -288,7 +288,10 @@ def extract_features_for_tseries(input_schema, input_table, well_id, hour_of_day
                 well_id = {well_id} and 
                 extract(hour from ts_utc) = {hour_of_day}
         )q
-        where dt_rank=1;   
+        where 
+            dt_rank=1
+        order by 
+            ts_utc;   
     """.format(
         input_schema=input_schema,
         input_table=input_table,

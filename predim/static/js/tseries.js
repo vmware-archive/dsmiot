@@ -3,8 +3,8 @@
   Show time-series plots for various well parameters
 */
 
-function tseries(div_id, data, title, yaxis_label, line_color) {
-    var margin = {top: 20, right: 20, bottom: 30, left: 50},
+function tseries(well_id, hour, div_id, data, feature, title, yaxis_label, line_color) {
+    var margin = {top: 30, right: 20, bottom: 30, left: 60},
         width = 960 - margin.left - margin.right,
         height = 500 - margin.top - margin.bottom;
 
@@ -15,7 +15,7 @@ function tseries(div_id, data, title, yaxis_label, line_color) {
     var xAxis = d3.svg.axis()
         .scale(x)
         .orient("bottom")
-        .ticks(d3.time.hours, 1);
+        .ticks(d3.time.minutes, 5);
 
     var yAxis = d3.svg.axis()
         .scale(y)
@@ -23,7 +23,7 @@ function tseries(div_id, data, title, yaxis_label, line_color) {
 
     var line = d3.svg.line()
         .x(function(d) { return x(d.ts_utc); })
-        .y(function(d) { return y(d.value); });
+        .y(function(d) { return y(d[feature]); });
 
     /* Draw the series plot on the div element */
     var svg = d3.select("#"+div_id).append("svg")
@@ -33,12 +33,12 @@ function tseries(div_id, data, title, yaxis_label, line_color) {
         .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 
     data.forEach(function(d) {
-        d.ts_utc = d3.time.format.iso.parse(d.ts_utc);
-        d.value = +d.value;
+        d.ts_utc = d3.time.format.iso.parse(d.ts_utc).getTime();
+        d[feature] = +d[feature];
     });
 
     x.domain(d3.extent(data, function(d) { return d.ts_utc; }));
-    y.domain(d3.extent(data, function(d) { return d.value; }));
+    y.domain(d3.extent(data, function(d) { return d[feature]; }));
 
     svg.append("g")
      .attr("class", "x axis")
@@ -50,7 +50,7 @@ function tseries(div_id, data, title, yaxis_label, line_color) {
      .call(yAxis)
      .append("text")
      .attr("transform", "rotate(-90)")
-     .attr("y", 6)
+     .attr("y", -margin.left)
      .attr("dy", ".71em")
      .style("text-anchor", "end")
      .text(yaxis_label);
@@ -58,14 +58,26 @@ function tseries(div_id, data, title, yaxis_label, line_color) {
     svg.append("path")
      .datum(data)
      .attr("class", "line")
-     .attr("d", line);
-     //.attr("style", "fill: none; stroke-width: 2px; stroke:"+line_color);
+     .attr("d", line)
+     .style("stroke",line_color)
+     .style("stroke-width","2.5px");
+
+    //Title
+    svg.append("text")
+     .attr("x", (width / 2))
+     .attr("y", -margin.top/2)
+     .attr("text-anchor", "middle")  
+     .style("font-size", "20px")
+     .style("opacity","0.6")
+     .text(title+": well_id - "+well_id+", hour_of_day - "+hour);
+
 }
 
 function invokeTimeSeries(well_id, hour) {
     d3.select("#tseries").html("");
     d3.select("#tseries").html("<h1 class=\"text-center\">Well Features : Series Plots</h1>"+"<br>"+  
-        "<span id=\"tseries_spinner\"><img src='../img/spinner.gif' class=\"customer-spinner\"></span>"+
+        "<span id='tseries_spinner'><img src='../img/spinner.gif' class=\"customer-spinner\"></span>"+
+        "<div id='tseries_depth' class=\"text-center\"></div><br><br>"+
         "<div id='tseries_rpm' class=\"text-center\"></div><br><br>"+
         "<div id='tseries_rop' class=\"text-center\"></div><br><br>"+
         "<div id='tseries_wob' class=\"text-center\"></div><br><br>"+
@@ -87,16 +99,17 @@ function invokeTimeSeries(well_id, hour) {
             d3.select("#tseries_spinner").html(""); 
             
             /* Show the time series plots */
-            heatmapDrilldown(well_id, hour, "tseries_rpm", "Time Series Plot for RPM", "RPM", "forestgreen");
+            /*heatmapDrilldown(well_id, hour, "tseries_rpm", "Time Series Plot for RPM", "RPM", "forestgreen");
             heatmapDrilldown(well_id, hour, "tseries_rop", "Time Series Plot for Rate of Penetration", "Rate of Penetration", "tomato");
             heatmapDrilldown(well_id, hour, "tseries_wob", "Time Series Plot for Weight on Bit", "Weight on Bit", "mediumvioletred");
             heatmapDrilldown(well_id, hour, "tseries_flowinrate", "Time Series Plot for Flow-in Rate", "Flow-in Rate", "slateblue");
-            heatmapDrilldown(well_id, hour, "tseries_bitpos", "Time Series Plot for Bit Position", "Bit Position", "deeppink");
-            /*tseries('tseries_rpm', data.tseries, "Time Series Plot : RPM", "RPM", "steelblue");
-            tseries('tseries_rop', data.tseries, "Time Series Plot: Rate of Penetration", "Rate of Penetration", "tomato");
-            tseries('tseries_wob', data.tseries, "Time Series Plot: Weight on Bit", "Weight on Bit", "mediumvioletred");
-            tseries('tseries_flowinrate', data.tseries, "Time Series Plot: Flow-in Rate", "Flow-in Rate", "slateblue");
-            tseries('tseries_bitpos', data.tseries, "Time Series Plot: Bit Position", "Bit Position", "deeppink");*/
+            heatmapDrilldown(well_id, hour, "tseries_bitpos", "Time Series Plot for Bit Position", "Bit Position", "deeppink");*/
+            tseries(well_id, hour, 'tseries_depth', data.tseries, 'depth', "Time series plot for depth", "depth", "orange");
+            tseries(well_id, hour, 'tseries_rpm', data.tseries, 'rpm', "Time series plot for rpm", "rpm", "forestgreen");
+            tseries(well_id, hour, 'tseries_rop', data.tseries, 'rop', "Time series plot for rate of penetration", "rate of penetration", "tomato");
+            tseries(well_id, hour, 'tseries_wob', data.tseries, 'wob', "Time series plot for weight on bit", "weight on bit", "mediumvioletred");
+            tseries(well_id, hour, 'tseries_flowinrate', data.tseries, 'flow_in_rate', "Time series plot for flow-in rate", "Flow-in Rate", "slateblue");
+            tseries(well_id, hour, 'tseries_bitpos', data.tseries, 'bit_position', "Time series plot for bit position", "bit position", "deeppink");
         }
     );
 }
@@ -167,7 +180,8 @@ function heatmapDrilldown(well_id, hour, div_id, title, yaxis_label, line_color)
          .attr("x", (width / 2))
          .attr("y", 0)
          .attr("text-anchor", "middle")  
-         .style("font-size", "16px")
+         .style("font-size", "20px")
+         .style("opacity","0.6")
          .text(title+": Well ID - "+well_id+" Hour of Day - "+hour);
     });
 }

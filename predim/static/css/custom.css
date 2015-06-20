@@ -37,21 +37,25 @@ text.axis-worktime {
 /* End of d3.js heatmap */
 
 /* Line chart */
-.axis path,
-.axis line {
-  fill: none;
-  stroke: #000;
-  shape-rendering: crispEdges;
+.axis path {
+    fill: none;
+    stroke: #888;
 }
 
-.x.axis path {
-  display: none;
+.axis line {
+    fill: none;
+    stroke: #888;
+    shape-rendering: crispEdges;
+}
+
+.axis text {
+    font-family: sans-serif;
+    font-size: 14px;
+    font-weight: bold;
+    opacity: 0.6;
 }
 
 .line {
-  fill: none;
-  stroke: steelblue;
-  stroke-width: 1.5px;
+    fill: none;
 }
-
 /* End of line chart */
