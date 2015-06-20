@@ -65,7 +65,7 @@ function drillHeatmap(data){
     heatMap.append("title").text(function(d) { return d.prob; });
 
     /* Drill-downs */
-    heatMap.on('click', function(d) { invokeTimeSeries(d.well_id, d.hour);});
+    heatMap.on('click', function(d) { invokeTimeSeries(d.well_id, d.hour, d.prob);});
 
     var legend = svg.selectAll(".legend")
         .data([0].concat(colorScale.quantiles()), function(d) { return d; })
