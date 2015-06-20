@@ -109,7 +109,7 @@ function invokeTimeSeries(well_id, hour, prob) {
             tseries(well_id, hour, prob, 'tseries_rpm', data.tseries, 'rpm', "rpm", "forestgreen");
             tseries(well_id, hour, prob, 'tseries_rop', data.tseries, 'rop', "rate of penetration", "tomato");
             tseries(well_id, hour, prob, 'tseries_wob', data.tseries, 'wob', "weight on bit", "mediumvioletred");
-            tseries(well_id, hour, prob, 'tseries_flowinrate', data.tseries, 'flow_in_rate', "Flow-in Rate", "slateblue");
+            tseries(well_id, hour, prob, 'tseries_flowinrate', data.tseries, 'flow_in_rate', "flow-in Rate", "slateblue");
             tseries(well_id, hour, prob, 'tseries_bitpos', data.tseries, 'bit_position', "bit position", "deeppink");
         }
     );
