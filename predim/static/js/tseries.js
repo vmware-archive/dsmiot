@@ -3,7 +3,7 @@
   Show time-series plots for various well parameters
 */
 
-function tseries(well_id, hour, div_id, data, feature, title, yaxis_label, line_color) {
+function tseries(well_id, hour, prob, div_id, data, feature, yaxis_label, line_color) {
     var margin = {top: 30, right: 20, bottom: 30, left: 60},
         width = 960 - margin.left - margin.right,
         height = 500 - margin.top - margin.bottom;
@@ -68,12 +68,13 @@ function tseries(well_id, hour, div_id, data, feature, title, yaxis_label, line_
      .attr("y", -margin.top/2)
      .attr("text-anchor", "middle")  
      .style("font-size", "20px")
+     .style("font-weight", "bold")
      .style("opacity","0.6")
-     .text(title+": well_id - "+well_id+", hour_of_day - "+hour);
+     .text("well_id: "+well_id+", hour_of_day: "+hour+", p(failure in next hour): "+Number(prob*100.0).toFixed(2)+"%");
 
 }
 
-function invokeTimeSeries(well_id, hour) {
+function invokeTimeSeries(well_id, hour, prob) {
     d3.select("#tseries").html("");
     d3.select("#tseries").html("<h1 class=\"text-center\">Well Features : Series Plots</h1>"+"<br>"+  
         "<span id='tseries_spinner'><img src='../img/spinner.gif' class=\"customer-spinner\"></span>"+
@@ -104,12 +105,12 @@ function invokeTimeSeries(well_id, hour) {
             heatmapDrilldown(well_id, hour, "tseries_wob", "Time Series Plot for Weight on Bit", "Weight on Bit", "mediumvioletred");
             heatmapDrilldown(well_id, hour, "tseries_flowinrate", "Time Series Plot for Flow-in Rate", "Flow-in Rate", "slateblue");
             heatmapDrilldown(well_id, hour, "tseries_bitpos", "Time Series Plot for Bit Position", "Bit Position", "deeppink");*/
-            tseries(well_id, hour, 'tseries_depth', data.tseries, 'depth', "Time series plot for depth", "depth", "orange");
-            tseries(well_id, hour, 'tseries_rpm', data.tseries, 'rpm', "Time series plot for rpm", "rpm", "forestgreen");
-            tseries(well_id, hour, 'tseries_rop', data.tseries, 'rop', "Time series plot for rate of penetration", "rate of penetration", "tomato");
-            tseries(well_id, hour, 'tseries_wob', data.tseries, 'wob', "Time series plot for weight on bit", "weight on bit", "mediumvioletred");
-            tseries(well_id, hour, 'tseries_flowinrate', data.tseries, 'flow_in_rate', "Time series plot for flow-in rate", "Flow-in Rate", "slateblue");
-            tseries(well_id, hour, 'tseries_bitpos', data.tseries, 'bit_position', "Time series plot for bit position", "bit position", "deeppink");
+            tseries(well_id, hour, prob, 'tseries_depth', data.tseries, 'depth', "depth", "orange");
+            tseries(well_id, hour, prob, 'tseries_rpm', data.tseries, 'rpm', "rpm", "forestgreen");
+            tseries(well_id, hour, prob, 'tseries_rop', data.tseries, 'rop', "rate of penetration", "tomato");
+            tseries(well_id, hour, prob, 'tseries_wob', data.tseries, 'wob', "weight on bit", "mediumvioletred");
+            tseries(well_id, hour, prob, 'tseries_flowinrate', data.tseries, 'flow_in_rate', "Flow-in Rate", "slateblue");
+            tseries(well_id, hour, prob, 'tseries_bitpos', data.tseries, 'bit_position', "bit position", "deeppink");
         }
     );
 }
