@@ -1,7 +1,8 @@
 
 """
 Collection of SQL snippets used in model-building.
-June-2015: Srivatsan Ramanujam <sramanujam@pivotal.io> : Ported SQL snippets originally authored by Rashmi Raghu <rraghu@pivotal.io>
+May-2015: Rashmi Raghu <rraghu@pivotal.io> - SQL snippets for feature generation, model building & scoring
+June-2015: Srivatsan Ramanujam <sramanujam@pivotal.io> - Ported SQL snippets into python functions + added snippets to populate heatmap & time series plots
 """
 
 def create_features(input_schema, input_table, output_schema, output_table):
@@ -299,6 +300,33 @@ def extract_features_for_tseries(input_schema, input_table, well_id, hour_of_day
         hour_of_day=hour_of_day
     )
     return sql    
+
+def extract_model_coefficients(input_schema, input_table):
+    """
+        Inputs:
+        =======
+        input_schema (str): The schema containing the input table
+        input_table (str): The table in the input_schema containing data from the wells
+        Outputs:
+        ========
+        SQL code block    
+    """    
+    sql = """
+        select *
+        from
+        (
+            select 
+                unnest(features) as feature,
+                unnest(coef_all) as coef
+            from
+                {input_schema}.{input_table}
+        )q
+        order by abs(coef) desc;
+    """.format(
+        input_schema=input_schema,
+        input_table=input_table        
+    )
+    return sql
     
     
     

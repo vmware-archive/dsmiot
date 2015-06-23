@@ -59,3 +59,15 @@ text.axis-worktime {
     fill: none;
 }
 /* End of line chart */
+
+/* Bar plot for model coefficients */
+
+.bar.positive {
+  fill: seagreen;
+}
+
+.bar.negative {
+  fill: orangered;
+}
+
+/* End of model coefficients */

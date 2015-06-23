@@ -22,6 +22,7 @@ bundles = {
     'user_js': Bundle(
            'js/heatmap.js',
            'js/tseries.js',
+           'js/modelcoefs.js',
            filters='jsmin' if os.getenv('VCAP_APP_PORT') else None, #minify if deploying on CF
            output='gen/user.js',
         ),
@@ -89,6 +90,22 @@ def drillrig_heatmap():
     df = conn.fetchDataFrame(sql)
     logger.info('drillrig_heatmap: {0} rows'.format(len(df)))
     return jsonify(hmap=[{'well_id':r['well_id'], 'hour':r['hour'], 'prob':r['prob']} for indx, r in df.iterrows()])
+    
+@app.route('/_mdl_coefs')    
+def fetch_model_coefficients():
+    """
+        Retrieve model coefficients
+    """
+    global conn
+    INPUT_SCHEMA = 'iot'
+    INPUT_TABLE = 'output_from_model_train'
+    sql = extract_model_coefficients(INPUT_SCHEMA, INPUT_TABLE)
+    logger.info(sql)
+    df = conn.fetchDataFrame(sql)
+    features = ['feature', 'coef']
+    result = [{k:r[k] for k in features} for indx, r in df.iterrows()] 
+    logger.info('mdlcoefs:'+str(len(result)))
+    return jsonify(mdlcoefs = result)
     
 @app.route('/_drillrig_tseries', methods=['GET'])    
 def drillrig_tseries():

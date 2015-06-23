@@ -1,6 +1,8 @@
 /* 
   Drilldown functionality for heatmaps
   Show time-series plots for various well parameters
+  Srivatsan Ramanujam <sramanujam@pivotal.io>, June-2015
+  Modified sample plots from https://github.com/mbostock/d3/wiki/Gallery
 */
 
 function tseries(well_id, hour, prob, div_id, data, feature, yaxis_label, line_color) {
@@ -85,6 +87,7 @@ function invokeTimeSeries(well_id, hour, prob) {
         "<div id='tseries_flowinrate' class=\"text-center\"></div><br><br>"+
         "<div id='tseries_bitpos' class=\"text-center\"></div>"
     );     
+    
     /* Scroll to the time-series plots */
     $('html,body').animate({
        scrollTop: $("#tseries").offset().top
@@ -110,7 +113,7 @@ function invokeTimeSeries(well_id, hour, prob) {
             tseries(well_id, hour, prob, 'tseries_rop', data.tseries, 'rop', "rate of penetration", "tomato");
             tseries(well_id, hour, prob, 'tseries_wob', data.tseries, 'wob', "weight on bit", "mediumvioletred");
             tseries(well_id, hour, prob, 'tseries_flowinrate', data.tseries, 'flow_in_rate', "flow-in Rate", "slateblue");
-            tseries(well_id, hour, prob, 'tseries_bitpos', data.tseries, 'bit_position', "bit position", "deeppink");
+            tseries(well_id, hour, prob, 'tseries_bitpos', data.tseries, 'bit_position', "bit position", "turquoise ");
         }
     );
 }
@@ -145,7 +148,7 @@ function heatmapDrilldown(well_id, hour, div_id, title, yaxis_label, line_color)
         .append("g")
         .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 
-    d3.tsv("../data/data.tsv", function(error, data) {
+    d3.tsv("../data/tseries_sample.tsv", function(error, data) {
       if (error) throw error;
 
       data.forEach(function(d) {
