@@ -15,12 +15,21 @@
                    $.getJSON("/_drillrig_hmap", function (data) { 
                        drillHeatmap(data.hmap);
                    });
+                   /* Spinner */
+                   d3.select("#modelcoefs").html("<h1 class=\"text-center\">Model Coefficients</h1>"+"<br>"+  
+                   "<span id='modelcoefs_spinner'><img src='../img/spinner.gif' class=\"customer-spinner\"></span>"
+                   );
+                   $.getJSON("/_mdl_coefs", function (data) { 
+                       drawModelCoefficients(data.mdlcoefs);
+                   });                   
                }
             );
         </script>
     </div>
 </div>
 <div id='heatmapdrilldown' class="text-center">
+</div>
+<div id='modelcoefs' class="text-center">
 </div>
 <div id='tseries' class="text-center">
 </div>
