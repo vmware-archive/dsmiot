@@ -21,7 +21,7 @@ function drillHeatmap(data){
     d3.select("#hmap_spinner").html("")
 
     /* Start painting heatmap */
-    var svg = d3.select("#drillheatmap").append("svg")
+    var svg = d3.select("#heatmap").append("svg")
         .attr("width", width + margin.left + margin.right)
         .attr("height", height + margin.top + margin.bottom)
         .append("g")

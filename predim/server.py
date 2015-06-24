@@ -68,6 +68,14 @@ def contact():
     """
     logger.debug('In contact()')
     return render_template('contact.html')
+    
+@app.route('/settings')
+def settings():
+    """
+       Settings page (for model building)
+    """
+    logger.debug('In settings()')
+    return render_template('settings.html')    
 
 @app.route('/<path:path>')
 def static_proxy(path):

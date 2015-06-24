@@ -70,4 +70,11 @@ text.axis-worktime {
   fill: orangered;
 }
 
+.bar.text {
+  fill: black;
+  font: 14px sans-serif;
+  opacity: 0.6;
+  text-anchor: end;
+}
+
 /* End of model coefficients */
