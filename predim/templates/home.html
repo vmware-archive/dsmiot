@@ -1,33 +1,36 @@
 {% extends "layout.html" %}
 {% block content %}
-<style>
-.full {
-   background: url('../img/drillrig.jpg') no-repeat center center fixed;
-}
-</style>
-<div id='drillheatmap' class="text-center">
-    <h1 class="text-center">Well Failures Heatmap</h1>
-    <span id="hmap_spinner"><img src='../img/spinner.gif' class="customer-spinner"></span>
-    <div class="panel-body">
-        <script type="text/javascript">
-            $(document).ready(
+<div id='headline' class="text-center">
+    <script type="text/javascript">
+    $(document).ready( 
+        function () {
+           setTimeout(
                function(){
+                   /* Remove the background image */
+                   $('.full').css("background-color","#ffffff");
+                   $('.full').css("background-image","none");
+                   
+                   /* Spinner for heatmap plots */
+                   d3.select("#heatmap").html("\<h1 class=\"text-center\">Well Failures Heatmap\</h1>"+"\<br>"+  
+                   "\<span id='hmap_spinner'>\<img src='../img/spinner.gif' class=\"custom-spinner\">\</span>"
+                   );
+                                      
+                   /* Fetch data for heatmap */
                    $.getJSON("/_drillrig_hmap", function (data) { 
                        drillHeatmap(data.hmap);
-                   });
-                   /* Spinner */
-                   d3.select("#modelcoefs").html("<h1 class=\"text-center\">Model Coefficients</h1>"+"<br>"+  
-                   "<span id='modelcoefs_spinner'><img src='../img/spinner.gif' class=\"customer-spinner\"></span>"
-                   );
+                   });          
+                                      
+                   /* Model coefficients bar plot */
                    $.getJSON("/_mdl_coefs", function (data) { 
                        drawModelCoefficients(data.mdlcoefs);
                    });                   
-               }
-            );
-        </script>
-    </div>
+               },
+               /* Timeout before the heatmap is rendered */ 
+               3000);
+        });
+    </script>
 </div>
-<div id='heatmapdrilldown' class="text-center">
+<div id='heatmap' class="text-center">
 </div>
 <div id='modelcoefs' class="text-center">
 </div>

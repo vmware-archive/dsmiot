@@ -37,12 +37,19 @@ def create_features(input_schema, input_table, output_schema, output_table):
                 flow_in_rate,
                 bit_position,
                 array[depth_count, rpm_count, rop_count, wob_count, flow_count, bitpos_count] as count_arr,
+                array['depth_count', 'rpm_count', 'rop_count', 'wob_count', 'flow_count', 'bitpos_count'] as count_arr_names,
                 array[depth_avg, depth_stddev, depth_min, depth_max, (depth_max - depth_min) / depth_count] as depth_stats_arr,
+                array['depth_avg', 'depth_stddev', 'depth_min', 'depth_max', '(depth_max - depth_min) / depth_count'] as depth_stats_arr_names,
                 array[rpm_avg, rpm_stddev, rpm_min, rpm_max, (rpm_max - rpm_min) /rpm_count] as rpm_stats_arr,
+                array['rpm_avg', 'rpm_stddev', 'rpm_min', 'rpm_max', '(rpm_max - rpm_min) /rpm_count'] as rpm_stats_arr_names,
                 array[rop_avg, rop_stddev, rop_min, rop_max, (rop_max - rop_min) / rop_count] as rop_stats_arr,
+                array['rop_avg', 'rop_stddev', 'rop_min', 'rop_max', '(rop_max - rop_min) / rop_count'] as rop_stats_arr_names,
                 array[wob_avg, wob_stddev, wob_min, wob_max, (wob_max - wob_min) / wob_count] as wob_stats_arr,
+                array['wob_avg', 'wob_stddev', 'wob_min', 'wob_max', '(wob_max - wob_min) / wob_count'] as wob_stats_arr_names,
                 array[flow_avg, flow_stddev, flow_min, flow_max, (flow_max - flow_min) / flow_count] as flow_stats_arr,
-                array[bitpos_avg, bitpos_stddev, bitpos_min, bitpos_max, (bitpos_max - bitpos_min) / bitpos_count] as bitpos_stats_arr
+                array['flow_avg', 'flow_stddev', 'flow_min', 'flow_max', '(flow_max - flow_min) / flow_count'] as flow_stats_arr_names,
+                array[bitpos_avg, bitpos_stddev, bitpos_min, bitpos_max, (bitpos_max - bitpos_min) / bitpos_count] as bitpos_stats_arr,
+                array['bitpos_avg', 'bitpos_stddev', 'bitpos_min', 'bitpos_max', '(bitpos_max - bitpos_min) / bitpos_count'] as bitpos_stats_arr_names
             from (
                     select 
                         well_id,
@@ -128,11 +135,11 @@ def add_label_to_features(input_schema, input_table, output_schema, output_table
             select 
                 case when failure_flag_for_full_run = 1 and ts_utc >= max_ts_utc_per_run - '1 hour'::interval then 1
                      else 0
-                end::integer as failure_flag_1hr_ahead,
-                case when random() <= 0.7 then 1 
-                     else 0 
-                end::integer as include_in_training,
-                *
+                end::integer as flag_dep_var,
+                random() as seed,
+                *,
+                rpm_stats_arr || rop_stats_arr || wob_stats_arr || flow_stats_arr || bitpos_stats_arr as indep_var_col,
+                rpm_stats_arr_names || rop_stats_arr_names || wob_stats_arr_names || flow_stats_arr_names || bitpos_stats_arr_names as indep_var_col_names
             from (
                 select 
                     *, 
@@ -158,16 +165,42 @@ def create_train_and_test_set(input_schema, input_table, output_schema, output_t
         output_table (str) : The table containig the engineered features, ready for training a model
         Outputs:
         ========
-        A sql code block    
+        sql (str) : A sql code block 
+        training_table: the name of the training table
+        test_table: the name of the test table   
     """    
-    sql = """   
+    sql = """  
+        -- Training table
+        drop table if exists {output_schema}.{output_table}_train;
+        create table {output_schema}.{output_table}_train
+        (
+            select 
+                *
+            from 
+                {input_schema}.{input_table}
+            where 
+                seed <= 0.70
+        ) distributed by (global_window_id);
+        
+        -- Test table
+        drop table if exists {output_schema}.{output_table}_test;
+        create table {output_schema}.{output_table}_test
+        (
+            select 
+                *
+            from 
+                {input_schema}.{input_table}
+            where 
+                seed > 0.70
+        ) distributed by (global_window_id);
+                
     """.format(
         input_schema=input_schema,
         input_table=input_table,
         output_schema=output_schema,
         output_table=output_table        
     )
-    return sql
+    return (sql, output_table+'_train', output_table+'_test')
 
 
 def train_model(input_schema, input_table, output_schema, output_table):
@@ -202,12 +235,14 @@ def train_model(input_schema, input_table, output_schema, output_table):
     return sql
     
 
-def predict_model(input_schema, input_table, output_schema, output_table):
+def predict_model(mdl_schema, mdl_table, scoring_schema, scoring_table, output_schema, output_table):
     """
         Inputs:
         =======
-        input_schema (str): The schema containing the input table
-        input_table (str): The table in the input_schema containing data from the wells
+        mdl_schema (str): The schema containing the model table
+        mdl_table (str): The table in the mdl_schema containing model coefficients
+        scoring_schema (str): Schema containing data to be scored
+        scoring_table (str): Table containing scoring data
         output_schema (str) : The schema for storing results of current prediction experiments
         output_table (str) : The table containig the engineered features, ready for training a model
         Outputs:
@@ -215,7 +250,25 @@ def predict_model(input_schema, input_table, output_schema, output_table):
         A sql code block       
     """    
     sql = """
-    """
+        drop table if exists {output_schema}.{output_table};
+        create table {output_schema}.{output_table}
+        as
+        (
+            select 
+                   *,
+                   madlib.elastic_net_binomial_predict(coef_all, intercept, indep_var_col) as pred,
+                   madlib.elastic_net_binomial_prob (coef_all, intercept, indep_var_col) as prob
+            from {mdl_schema}.{mdl_table} mdl,
+                 {scoring_schema}.{scoring_table} score
+        ) distributed randomly;
+    """.format(
+        mdl_schema=mdl_schema,
+        mdl_table=mdl_table,
+        scoring_schema=scoring_table,
+        scoring_table=scoring_table,
+        output_schema=output_schema,
+        output_table=output_table        
+    )
     return sql
     
 def extract_predictions_for_heatmap(input_schema, input_table):
@@ -311,20 +364,34 @@ def extract_model_coefficients(input_schema, input_table):
         ========
         SQL code block    
     """    
+    #Hard-coding these feature names for now, until we can pull it out of the prediction table itself
+    count_arr_names = ['depth_count', 'rpm_count', 'rop_count', 'wob_count', 'flow_count', 'bitpos_count']
+    depth_stats_arr_names = ['depth_avg', 'depth_stddev', 'depth_min', 'depth_max', '(depth_max - depth_min) / depth_count'] 
+    rpm_stats_arr_names = ['rpm_avg', 'rpm_stddev', 'rpm_min', 'rpm_max', '(rpm_max - rpm_min) /rpm_count']
+    rop_stats_arr_names = ['rop_avg', 'rop_stddev', 'rop_min', 'rop_max', '(rop_max - rop_min) / rop_count']
+    wob_stats_arr_names = ['wob_avg', 'wob_stddev', 'wob_min', 'wob_max', '(wob_max - wob_min) / wob_count']
+    flow_stats_arr_names = ['flow_avg', 'flow_stddev', 'flow_min', 'flow_max', '(flow_max - flow_min) / flow_count']
+    bitpos_stats_arr_names = ['bitpos_avg', 'bitpos_stddev', 'bitpos_min', 'bitpos_max', '(bitpos_max - bitpos_min) / bitpos_count']     
+    indep_var_col_names = rpm_stats_arr_names + rop_stats_arr_names + wob_stats_arr_names + flow_stats_arr_names + bitpos_stats_arr_names
     sql = """
         select *
         from
         (
             select 
-                unnest(features) as feature,
+                unnest(features) as feature_arr_indx,
+                --Hard-coding this until we can pull this from the prediction table itself
+                unnest(ARRAY{feature_names}) as feature,
                 unnest(coef_all) as coef
             from
                 {input_schema}.{input_table}
         )q
+        --Select non-zero coefficients only
+        where coef != 0
         order by abs(coef) desc;
     """.format(
         input_schema=input_schema,
-        input_table=input_table        
+        input_table=input_table,
+        feature_names=indep_var_col_names        
     )
     return sql
     

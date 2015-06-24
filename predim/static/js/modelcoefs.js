@@ -5,7 +5,7 @@
 */
 
 function drawModelCoefficients(data) {
-    var margin = {top: 30, right: 20, bottom: 10, left: 20},
+    var margin = {top: 30, right: 100, bottom: 10, left: 100},
         width = 960 - margin.left - margin.right,
         height = 500 - margin.top - margin.bottom;
 
@@ -19,8 +19,8 @@ function drawModelCoefficients(data) {
         .scale(x)
         .orient("top");
 
-    /* Clear existing elements */
-    d3.select("#modelcoefs_spinner").html("");
+    /* Add heading for model coefficients bar plot */
+    d3.select("#modelcoefs").html("\<h1 class=\"text-center\">Model Coefficients\</h1>"+"\<br>");         
 
     var svg = d3.select("#modelcoefs").append("svg")
      .attr("width", width + margin.left + margin.right)
@@ -32,14 +32,26 @@ function drawModelCoefficients(data) {
     x.domain(d3.extent(data, function(d) { return d.coef; })).nice();
     y.domain(data.map(function(d) { return d.feature; }));
 
-    svg.selectAll(".bar")
+    var rectGroup = svg.selectAll(".bar")
      .data(data)
-     .enter().append("rect")
+     .enter()
+     .append("g");
+    
+    //Draw the bars
+    rectGroup.append("rect")
      .attr("class", function(d) { return d.coef < 0 ? "bar negative" : "bar positive"; })
      .attr("x", function(d) { return x(Math.min(0, d.coef)); })
      .attr("y", function(d) { return y(d.feature); })
      .attr("width", function(d) { return Math.abs(x(d.coef) - x(0)); })
      .attr("height", y.rangeBand());
+     
+    //Add a labelt o the bars 
+    rectGroup.append("text")
+     .attr("class", "bar text")
+     .attr("x", function(d) { return x(Math.min(0, d.coef)); })
+     .attr("y", function(d) { return y(d.feature) + y.rangeBand()/2; })
+     .attr("dy", ".35em")
+     .text(function(d) { return d.feature; });
 
     svg.append("g")
      .attr("class", "x axis")
@@ -51,10 +63,6 @@ function drawModelCoefficients(data) {
      .attr("x1", x(0))
      .attr("x2", x(0))
      .attr("y2", height);
-     
-    /* Add a label */
-
-    /* End of label */
 
     function type(d) {
       d.coef = +d.coef;
