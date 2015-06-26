@@ -29,10 +29,10 @@ function tseries(well_id, hour, prob, div_id, data, feature, yaxis_label, line_c
 
     /* Draw the series plot on the div element */
     var svg = d3.select("#"+div_id).append("svg")
-        .attr("width", width + margin.left + margin.right)
-        .attr("height", height + margin.top + margin.bottom)
-        .append("g")
-        .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+     .attr("width", width + margin.left + margin.right)
+     .attr("height", height + margin.top + margin.bottom)
+     .append("g")
+     .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 
     data.forEach(function(d) {
         d.ts_utc = d3.time.format.iso.parse(d.ts_utc).getTime();
@@ -57,8 +57,8 @@ function tseries(well_id, hour, prob, div_id, data, feature, yaxis_label, line_c
      .style("text-anchor", "end")
      .text(yaxis_label);
 
-    svg.append("path")
-     .datum(data)
+     svg.append("path")
+     .datum(data)     
      .attr("class", "line")
      .attr("d", line)
      .style("stroke",line_color)
@@ -73,7 +73,34 @@ function tseries(well_id, hour, prob, div_id, data, feature, yaxis_label, line_c
      .style("font-weight", "bold")
      .style("opacity","0.6")
      .text("well_id: "+well_id+", hour_of_day: "+hour+", p(failure in next hour): "+Number(prob*100.0).toFixed(2)+"%");
-
+     
+     /* Tooltip: based on http://bl.ocks.org/Caged/6476579 */
+     var tip = d3.tip()
+      .attr('class', 'd3-tip')
+      .offset([-10, 0])
+      .html(function(d) {
+          return "<strong>"+feature+":</strong> <span style='color:red'>" + d[feature] + "</span>"+"<br>"+"<strong>ts_utc:</strong> <span style='color:green'>" + (new Date(d.ts_utc)).toUTCString() + "</span>";
+      });           
+     
+     svg.call(tip);  
+          
+     svg.selectAll(".circle")
+     .data(data)
+     .enter()
+     .append("svg:circle")
+     .attr("class", "circle")
+     .attr("cx", function (d) {
+        return x(d.ts_utc);
+     })
+     .attr("cy", function (d) {
+       return y(d[feature]);
+     })
+     .attr("r", 1)
+     .attr("fill", "none")
+     .attr("stroke", line_color)
+     .on('mouseover', tip.show)
+     .on('mouseout', tip.hide);     
+     /* End of tooltip */
 }
 
 function invokeTimeSeries(well_id, hour, prob) {
@@ -113,7 +140,7 @@ function invokeTimeSeries(well_id, hour, prob) {
             tseries(well_id, hour, prob, 'tseries_rop', data.tseries, 'rop', "rate of penetration", "tomato");
             tseries(well_id, hour, prob, 'tseries_wob', data.tseries, 'wob', "weight on bit", "mediumvioletred");
             tseries(well_id, hour, prob, 'tseries_flowinrate', data.tseries, 'flow_in_rate', "flow-in Rate", "slateblue");
-            tseries(well_id, hour, prob, 'tseries_bitpos', data.tseries, 'bit_position', "bit position", "turquoise ");
+            tseries(well_id, hour, prob, 'tseries_bitpos', data.tseries, 'bit_position', "bit position", "turquoise");
         }
     );
 }

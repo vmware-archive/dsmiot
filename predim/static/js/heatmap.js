@@ -1,6 +1,6 @@
 /* Heatmap of failure probabilities by (well_id, hour_of_day) pairs */
 function drillHeatmap(data){
-    var margin = { top: 100, right: 0, bottom: 100, left: 100 },
+    var margin = { top: 50, right: 0, bottom: 50, left: 100 },
         width = 1000 - margin.left - margin.right;
     var well_ids = d3.set(data.map(function(d){ 
                          return d.well_id;
