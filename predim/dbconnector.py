@@ -56,7 +56,7 @@ class DBConnect(object):
         """
            Initialize a connection pool
         """
-        self.pool = psycopg2.pool.SimpleConnectionPool(1, 10, self.conn_str)
+        self.pool = psycopg2.pool.SimpleConnectionPool(1, 5, self.conn_str)
 
     def __is_dbconn_alive__(self):
         """ 
@@ -65,11 +65,14 @@ class DBConnect(object):
         ping_cmd = """select 1;"""
         conn_alive = True
         isQuery = True
+	conn_from_pool = self.pool.getconn()
         try:
-            df = psql.read_sql(ping_cmd, self.getConnection())
+            df = psql.read_sql(ping_cmd, conn_from_pool)
         except psycopg2.Error, e:
             self.logger.error('Database connection is not alive: '+str(e))
             conn_alive = False
+        finally:
+	    self.pool.putconn(conn_from_pool)
         return conn_alive
 
     def __reconnect_if_closed__(self, conn_str=None):
@@ -81,15 +84,12 @@ class DBConnect(object):
             self.logger.warn('Detected closed connections. Reconnecting...')
             self.__initConnectionPool__()
 
-    def getConnection(self):
-        """
-           Fetch a connection from the connection pool
-        """ 
-        return self.pool.getconn()
-
     def fetchDataFrame(self, query):
         """
            Execute query
         """
         self.__reconnect_if_closed__()
-        return psql.read_sql(query, self.getConnection())
+	conn_from_pool = self.pool.getconn()
+	df = psql.read_sql(query, conn_from_pool)
+	self.pool.putconn(conn_from_pool)
+        return df

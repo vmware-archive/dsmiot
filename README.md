@@ -53,7 +53,7 @@ Pushing the app to PCF
 
 1. Push the app to your PCF instance (assuming you've set one up)
 ```
-dsmiot [master●●] cf push predimcf  -b git://github.com/ihuston/python-conda-buildpack.git -c "bash deploy" -t 180     
+dsmiot [master●●] cf push predimcf  -f manifest.yml    
 ```
 2. Create User Provided Service for database credentials (first time only)
 ```
