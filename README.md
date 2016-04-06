@@ -57,7 +57,7 @@ dsmiot [master●●] cf push predimcf  -f manifest.yml
 ```
 2. Create User Provided Service for database credentials (first time only)
 ```
-dsmiot [master●●] cf cups predimcreds -p '{"host":"<HOST>","user":"<USER>","password":"<PASSWORD>", "databasename":"<DATABASE>", "port":"<PORT>" }'
+dsmiot [master●●] cf cups predimcreds -p '{"host":"<HOST>","user":"<USER>","password":"<PASSWORD>", "database":"<DATABASE>", "port":"<PORT>" }'
 ```
 3. Bind the User Provided Service to the app (first time only)
 ```
