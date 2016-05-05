@@ -1,3 +1,8 @@
+Predictive Maintenance for Drilling Operations
+=================================================
+
+![Predictive Maintenance for Drilling Operations](https://github.com/pivotalsoftware/dsmiot/raw/gh-pages/img/predim_1080p.gif)
+
 Pre-requisites
 ==============
 The `conda_requirements.txt` file lists all the python packages that are available via `conda` and are pre-requisites for this app.
