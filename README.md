@@ -1,7 +1,7 @@
 Live Demo
 ===========
 
-The app is accessible on our PCF instance at: [predimcf.pcf1-rdu.nasa.pivotal.io](predimcf.pcf1-rdu.nasa.pivotal.io)
+The app is accessible on our [PCF instance](https://predimcf.pcf1-rdu.nasa.pivotal.io)
 
 Predictive Maintenance for Drilling Operations
 =================================================
