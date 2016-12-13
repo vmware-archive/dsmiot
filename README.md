@@ -1,3 +1,13 @@
+Live Demo
+===========
+
+The app is accessible on our PCF instance at: [predimcf.pcf1-rdu.nasa.pivotal.io](predimcf.pcf1-rdu.nasa.pivotal.io)
+
+Predictive Maintenance for Drilling Operations
+=================================================
+
+![Predictive Maintenance for Drilling Operations](https://github.com/pivotalsoftware/dsmiot/raw/gh-pages/img/predim_1080p.gif)
+
 Pre-requisites
 ==============
 The `conda_requirements.txt` file lists all the python packages that are available via `conda` and are pre-requisites for this app.
@@ -63,4 +73,4 @@ dsmiot [master●●] cf cups predimcreds -p '{"host":"<HOST>","user":"<USER>","
 ```
 dsmiot [master●●] cf bind-service predimcf predimcreds
 ```
-The app should now be accessible on your PCF instance. In our case, at http://predimcf.pcf1-sc.vchs.pivotal.io/
+The app should now be accessible on your PCF instance. 
