@@ -5,7 +5,7 @@ May-2015: Rashmi Raghu <rraghu@pivotal.io>
 June-2015: Srivatsan Ramanujam <sramanujam@pivotal.io> - Ported SQL snippets into python functions + added snippets to populate heatmap & time series plots
 """
 
-def extract_predictions_for_heatmap(input_schema, input_table):
+def extract_predictions_for_heatmap(input_schema, input_table, p_thresh):
     """
         Inputs:
         =======
@@ -17,14 +17,21 @@ def extract_predictions_for_heatmap(input_schema, input_table):
     """
     sql = """
         select
+            rank_id,
             well_id,
             run_id as latest_run,
             ts_utc_date as latest_date,
+            extract(year from ts_utc) as yr,
+            extract(month from ts_utc) as mth,
+            extract(day from ts_utc) as dt,
             hour,
+            row_number() over (partition by well_id, run_id order by ts_utc_date, hour) - 1
+                + first_value(hour) over(partition by well_id, run_id order by ts_utc_date, hour) as hour_across_dates,
             prob
         from
         (
             select
+                rank_id,
                 well_id,
                 run_id,
                 window_id,
@@ -35,21 +42,43 @@ def extract_predictions_for_heatmap(input_schema, input_table):
                 rank() over(partition by well_id, run_id, ts_utc::date, extract(hour from ts_utc) order by ts_utc) as ts_utc_hour_rank,
                 ts_utc,
                 prob
-            from
-                {input_schema}.{input_table}
+            from (
+                select * from
+                    {input_schema}.{input_table} t1,
+                    (
+                        select wid, rnid, rank() over (order by wid, rnid) as rank_id
+                        from (
+                            select well_id as wid, run_id as rnid
+                            from (
+                                select * from (
+                                    select well_id, run_id, ts_utc::date as ts_utc_dt, extract(hour from ts_utc) as hr, prob,
+                                        rank() over(partition by well_id, run_id, ts_utc::date, extract(hour from ts_utc) order by ts_utc) as hr_rank
+                                    from {input_schema}.{input_table}
+                                ) tn
+                                where hr_rank = 1
+                            ) t0
+                            where prob >= {p_thresh}
+                            group by well_id, run_id
+                        ) t2
+                        --order by 1,2 limit 2
+                    ) t3
+                where t1.well_id = t3.wid
+                and t1.run_id = t3.rnid
+            ) t4
         ) q
         where
-            run_rank = 1 and
-            ts_utc_date_rank = 1 and
+            --run_rank = 1 and
+            --ts_utc_date_rank = 1 and
             ts_utc_hour_rank = 1
         order by well_id, latest_run, latest_date, hour
     """.format(
         input_schema=input_schema,
         input_table=input_table,
+        p_thresh=p_thresh,
     )
     return sql
 
-def extract_features_for_tseries(input_schema, input_table, well_id, hour_of_day):
+def extract_features_for_tseries(input_schema, input_table, well_id, yr, mth, dt, hour_of_day):
     """
         Inputs:
         =======
@@ -61,30 +90,44 @@ def extract_features_for_tseries(input_schema, input_table, well_id, hour_of_day
         ========
         A sql code block
     """
+    if hour_of_day == 0:
+        hr_correction = 24
+    else:
+        hr_correction = hour_of_day
     sql = """
         select
             *
         from
         (
             select
-                *,
+                *
+                --,
                 -- we want the feature values for the last available day, for the given (well_id, hour)
-                rank() over (partition by well_id order by ts_utc::date desc) as dt_rank
+                --rank() over (partition by well_id order by ts_utc::date desc) as dt_rank
             from
                 {input_schema}.{input_table}
             where
                 well_id = {well_id} and
-                extract(hour from ts_utc) = {hour_of_day}
+                extract(hour from ts_utc) = {hr_correction}-1
+                and
+                extract(year from ts_utc) = {yr}
+                and
+                extract(month from ts_utc) = {mth}
+                and
+                extract(day from ts_utc) = {dt}
         )q
-        where
-            dt_rank=1
+        --where
+        --    dt_rank=1
         order by
             ts_utc;
     """.format(
         input_schema=input_schema,
         input_table=input_table,
         well_id=well_id,
-        hour_of_day=hour_of_day
+        yr=yr,
+        mth=mth,
+        dt=dt,
+        hr_correction=hr_correction
     )
     return sql
 
