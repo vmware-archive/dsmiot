@@ -5,7 +5,8 @@
 import os
 import json
 from flask import Flask, render_template, jsonify, request
-from flask.ext.assets import Bundle, Environment
+#from flask.ext.assets import Bundle, Environment
+from flask_assets import Bundle, Environment
 import logging
 from dbconnector import DBConnect
 from sql.queries import *
