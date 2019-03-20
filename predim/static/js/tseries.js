@@ -78,7 +78,7 @@ function tseries(well_id, yr, mth, dt, hour, prob, div_id, data, feature, yaxis_
      .style("opacity","0.6")
      .text("well_id: "+well_id+", hour_of_day: "+hour+", p(failure in the hour): "+Number(prob*100.0).toFixed(2)+"%");
 
-     /* Tooltip: based on http://bl.ocks.org/Caged/6476579 */
+     /* Tooltip: based on https://bl.ocks.org/Caged/6476579 */
      var tip = d3.tip()
       .attr('class', 'd3-tip')
       .offset([-10, 0])
