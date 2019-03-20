@@ -1,7 +1,7 @@
 /* 
   Show a bar plot of model coefficients
   Srivatsan Ramanujam <sramanujam@pivotal.io>, June-2015
-  Based on the example: http://bl.ocks.org/mbostock/2368837
+  Based on the example: https://bl.ocks.org/mbostock/2368837
 */
 
 function drawModelCoefficients(data) {

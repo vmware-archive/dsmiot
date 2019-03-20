@@ -1,6 +1,6 @@
-# [Start Bootstrap](http://startbootstrap.com/) - [Full](http://startbootstrap.com/template-overviews/full/)
+# [Start Bootstrap](https://startbootstrap.com/) - [Full](https://startbootstrap.com/template-overviews/full/)
 
-[Full](http://startbootstrap.com/template-overviews/full/) is full page background image HTML starter template for [Bootstrap](http://getbootstrap.com/) created by [Start Bootstrap](http://startbootstrap.com/).
+[Full](https://startbootstrap.com/template-overviews/full/) is full page background image HTML starter template for [Bootstrap](https://getbootstrap.com/) created by [Start Bootstrap](https://startbootstrap.com/).
 
 ## Getting Started
 
@@ -10,7 +10,7 @@ To use this template, choose one of the following options to get started:
 
 ## Bugs and Issues
 
-Have a bug or an issue with this template? [Open a new issue](https://github.com/IronSummitMedia/startbootstrap-full/issues) here on GitHub or leave a comment on the [template overview page at Start Bootstrap](http://startbootstrap.com/template-overviews/full/).
+Have a bug or an issue with this template? [Open a new issue](https://github.com/IronSummitMedia/startbootstrap-full/issues) here on GitHub or leave a comment on the [template overview page at Start Bootstrap](https://startbootstrap.com/template-overviews/full/).
 
 ## Creator
 
@@ -19,7 +19,7 @@ Start Bootstrap was created by and is maintained by **David Miller**, Managing P
 * https://twitter.com/davidmillerskt
 * https://github.com/davidtmiller
 
-Start Bootstrap is based on the [Bootstrap](http://getbootstrap.com/) framework created by [Mark Otto](https://twitter.com/mdo) and [Jacob Thorton](https://twitter.com/fat).
+Start Bootstrap is based on the [Bootstrap](https://getbootstrap.com/) framework created by [Mark Otto](https://twitter.com/mdo) and [Jacob Thorton](https://twitter.com/fat).
 
 ## Copyright and License
 
